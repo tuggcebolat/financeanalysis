@@ -1,0 +1,212 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veri Analiz Sonuçları</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Veri Analiz Sonuçları</h1>
+
+        <h2>Özet İstatistikler</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>İstatistik</th>
+                    {% for column in summary_statistics.keys() %}
+                        <th>{{ column }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for statistic, values in summary_statistics.items() %}
+                    <tr>
+                        <td>{{ statistic }}</td>
+                        {% for value in values.values() %}
+                            <td>{{ value }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>Korelasyon Matrisi</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    {% for column in correlation_matrix.keys() %}
+                        <th>{{ column }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row, values in correlation_matrix.items() %}
+                    <tr>
+                        <td>{{ row }}</td>
+                        {% for value in values.values() %}
+                            <td>{{ value }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>Pairplot</h2>
+        <img src="{{ url_for('static', filename='pairplot.png') }}" alt="Pairplot">
+    </div>
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Analysis Results</h1>
+
+    <!-- Sayısal Değişkenler İçin Özet İstatistikler -->
+    {% if summary_statistics %}
+    <h2>Summary Statistics</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Statistic</th>
+                {% for column in summary_statistics.keys() %}
+                <th>{{ column }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for stat, values in summary_statistics.items() %}
+            <tr>
+                <td>{{ stat }}</td>
+                {% for column in summary_statistics.keys() %}
+                <td>{{ values[column] }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    <!-- Korelasyon Matrisi -->
+    {% if correlation_matrix %}
+    <h2>Correlation Matrix</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Variable</th>
+                {% for column in correlation_matrix.keys() %}
+                <th>{{ column }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row, values in correlation_matrix.items() %}
+            <tr>
+                <td>{{ row }}</td>
+                {% for column in correlation_matrix.keys() %}
+                <td>{{ values[column] }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    <!-- Kategorik Değişkenler İçin Frekans Tabloları -->
+    {% if categorical_summary %}
+    <h2>Categorical Variables Summary</h2>
+    {% for column, values in categorical_summary.items() %}
+    <h3>{{ column }}</h3>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Value</th>
+                <th>Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for value, count in values.items() %}
+            <tr>
+                <td>{{ value }}</td>
+                <td>{{ count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <img src="{{ url_for('static', filename='categorical_' + column + '.png') }}" alt="Categorical Variable {{ column }}">
+    {% endfor %}
+    {% endif %}
+
+    <!-- Aykırı Değerler -->
+    {% if outliers %}
+    <h2>Outliers</h2>
+    {% for column, values in outliers.items() %}
+    <h3>{{ column }}</h3>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Outlier Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for value in values %}
+            <tr>
+                <td>{{ value }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <img src="{{ url_for('static', filename='outliers_' + column + '.png') }}" alt="Outliers for {{ column }}">
+    {% endfor %}
+    {% endif %}
+
+    <!-- Pairplot -->
+    {% if summary_statistics %}
+    <h2>Pairplot</h2>
+    <img src="{{ url_for('static', filename='pairplot.png') }}" alt="Pairplot">
+    {% endif %}
+
+    <br>
+    <a href="{{ url_for('home') }}">Back to Home</a>
+</body>
+</html>
